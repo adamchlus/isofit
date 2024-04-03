@@ -178,9 +178,15 @@ def main(rawargs=None):
 
     # Based on the sensor type, get appropriate year/month/day info fro intial condition.
     # We'll adjust for line length and UTC day overrun later
+    global INVERSION_WINDOWS
+
     if args.sensor == 'ang':
         # parse flightline ID (AVIRIS-NG assumptions)
         dt = datetime.strptime(paths.fid[3:], '%Y%m%dt%H%M%S')
+    elif args.sensor == "av3":
+        # parse flightline ID (AVIRIS-3 assumptions)
+        dt = datetime.strptime(paths.fid[3:], "%Y%m%dt%H%M%S")
+        INVERSION_WINDOWS = [[380.0, 1350.0], [1435, 1800.0], [1970.0, 2500.0]]
     elif args.sensor == 'avcl':
         # parse flightline ID (AVIRIS-CL assumptions)
         dt = datetime.strptime('20{}t000000'.format(paths.fid[1:7]), '%Y%m%dt%H%M%S')
@@ -190,7 +196,6 @@ def main(rawargs=None):
         dt = datetime.strptime(paths.fid[3:], '%Y%m%dt%H%M%S')
     elif args.sensor == 'emit':
         dt = datetime.strptime(paths.fid[:19], 'emit%Y%m%dt%H%M%S')
-        global INVERSION_WINDOWS 
         INVERSION_WINDOWS = [[380.0, 1325.0], [1435, 1770.0], [1965.0, 2500.0]]
     elif args.sensor[:3] == 'NA-':
         dt = datetime.strptime(args.sensor[3:], '%Y%m%d')
@@ -198,7 +203,7 @@ def main(rawargs=None):
         dt = datetime.strptime(paths.fid[10:17], '%Y%j')
     else:
         raise ValueError('Datetime object could not be obtained. Please check file name of input data.')
-        
+
     dayofyear = dt.timetuple().tm_yday
 
     h_m_s, day_increment, mean_path_km, mean_to_sensor_azimuth, mean_to_sensor_zenith, valid, \
@@ -430,15 +435,15 @@ def main(rawargs=None):
                            nneighbors=nneighbors)
         elif args.analytical_line == 1:
             logging.info('Analytical line inference')
-            analytical_line.main([paths.radiance_working_path, 
-                                  paths.loc_working_path, 
-                                  paths.obs_working_path, 
-                                  args.working_directory, 
+            analytical_line.main([paths.radiance_working_path,
+                                  paths.loc_working_path,
+                                  paths.obs_working_path,
+                                  args.working_directory,
                                   '--n_atm_neighbors', str(nneighbors),
                                   '--smoothing_sigma', '2',
                                   '--output_rfl_file', paths.rfl_working_path,
                                   '--output_unc_file', paths.uncert_working_path,
-                                  '--loglevel', args.logging_level, 
+                                  '--loglevel', args.logging_level,
                                   '--logfile', args.log_file])
 
     logging.info('Done.')
