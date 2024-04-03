@@ -136,7 +136,7 @@ def main(rawargs=None):
 
     use_superpixels = ((args.empirical_line == 1) or (args.analytical_line == 1))
 
-    if args.sensor not in ['ang', 'avcl', 'neon', 'prism', 'emit', 'hyp']:
+    if args.sensor not in ['ang','av3','avcl', 'neon', 'prism', 'emit', 'hyp']:
         if args.sensor[:3] != 'NA-':
             raise ValueError('argument sensor: invalid choice: "NA-test" (choose from '
                              '"ang", "avcl", "neon", "prism", "emit", "NA-*")')
